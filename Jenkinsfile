@@ -19,6 +19,13 @@ pipeline {
         }
 
         stage('Build & Test') {
+            agent {
+                docker {
+                    image 'maven:3.9-eclipse-temurin-17'
+                    args '-v $HOME/.m2:/root/.m2 --network host'
+                    reuseNode true
+                }
+            }
             steps {
                 sh 'mvn clean verify -B'
             }
