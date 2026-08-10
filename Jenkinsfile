@@ -35,8 +35,13 @@ pipeline {
         stage('Build & Test') {
             steps {
                 sh '''
+                    export JAVA_HOME=$(/usr/libexec/java_home -v 24)
+                    export PATH="$JAVA_HOME/bin:$PATH"
+
+                    echo "JAVA_HOME=$JAVA_HOME"
                     java -version
                     mvn -version
+
                     mvn clean verify -B
                 '''
             }
