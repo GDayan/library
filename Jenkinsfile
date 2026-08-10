@@ -54,7 +54,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-            sh {"pwd && ls -la"},
+                sh "pwd && ls -la",
                 script {
                     dockerImage = docker.build("${FULL_IMAGE}")
                 }
