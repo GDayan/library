@@ -2,12 +2,15 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY   = 'docker.io/dayan78'
-        IMAGE_NAME         = 'library-app'
-        IMAGE_TAG           = "${env.BUILD_NUMBER}"
-        FULL_IMAGE          = "${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-        K8S_NAMESPACE       = 'library'
-        K8S_DEPLOYMENT      = 'library-app'
+        PATH = "/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+        DOCKER_REGISTRY = 'docker.io/dayan78'
+        IMAGE_NAME = 'library-app'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        FULL_IMAGE = "${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+        K8S_NAMESPACE = 'library'
+        K8S_DEPLOYMENT = 'library-app'
     }
 
     stages {
@@ -30,15 +33,12 @@ pipeline {
             }
 
         stage('Build & Test') {
-            agent {
-                docker {
-                    image 'maven:3.9-eclipse-temurin-17'
-                    args '-v $HOME/.m2:/root/.m2'
-                    reuseNode true
-                }
-            }
             steps {
-                sh 'mvn clean verify -B'
+                sh '''
+                    java -version
+                    mvn -version
+                    mvn clean verify -B
+                '''
             }
             post {
                 always {
