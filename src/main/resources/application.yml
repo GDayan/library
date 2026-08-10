@@ -31,4 +31,4 @@ management:
     health:
       probes:
         enabled: true
-      show-details: never   # не светить детали БД/диска наружу в проде
+      show-details: never
