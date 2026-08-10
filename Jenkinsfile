@@ -54,7 +54,6 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'pwd && ls -la'
 
                 script {
                     dockerImage = docker.build("${FULL_IMAGE}")
@@ -64,13 +63,18 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
-                        dockerImage.push()
-                        dockerImage.push('latest')
-                    }
-                }
-            }
+                            withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials',
+                                                             usernameVariable: 'DOCKER_USER',
+                                                             passwordVariable: 'DOCKER_TOKEN')]) {
+                                sh '''
+                                    echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+
+                                    docker push ${FULL_IMAGE}
+
+                                    docker tag ${FULL_IMAGE} ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest
+                                    docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest
+                                '''
+                            }
         }
 
         stage('Deploy to Kubernetes') {
