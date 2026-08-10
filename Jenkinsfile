@@ -78,8 +78,5 @@ pipeline {
         failure {
             echo "Pipeline failed — check logs above."
         }
-        always {
-            sh 'docker system prune -f || true'
-        }
     }
 }
